@@ -5,6 +5,12 @@
   * version: 1
  * *************** */
 
+// para realizar a conexão com o banco de dados iremosutilizar o PRISMA
+// npm install prisma --save
+//npx prisma
+// npx prisma init
+//npm install @prisma/client
+
  // import das bibliotecas do projeto
 
  const express = require('express');
