@@ -44,18 +44,22 @@ app.use((request, response, next) => {
 *Versão: 1.0
 *Data: 14/04/2023
 * *************** */
+//criando uma const para realizar o processo de padronização de dados que vão chegar no body da requisoção
+const bodyJson = bodyParser.json();
+
+//import da controller do aluno
+const controllerAluno = require('./controller/controller_aluno.js')
 
 //endpoit retorna todos os dados de alunos
 app.get('/v1/lion-school/aluno', cors(), async function (request, response) {
-   //import da controller do aluno
-   let controllerAluno = require ('./controller/controller_aluno.js')
-//solicita a controle que retorne todo os alunos do banco de dados
+
+   //solicita a controle que retorne todo os alunos do banco de dados
    let dados = await controllerAluno.selecionarTodosAlunos();
-//valida se existem registros para retorna uma rquisição
+   //valida se existem registros para retorna uma rquisição
    if (dados) {
       response.json(dados)
       response.status(200)
-   }else {
+   } else {
       response.json();
       response.status(404) // quando nãoo se encontra
    }
@@ -69,9 +73,14 @@ app.get('/v1/lion-school/aluno/:id', cors(), async function (request, response) 
 })
 
 //inserir um novo aluno
-app.post('/v1/lion-school/aluno', cors(), async function (request, response) {
-
-
+app.post('/v1/lion-school/aluno', cors(), bodyJson, async function (request, response) {
+   //recebe os dados encaminhados no body da requisição
+   let dadosBody = request.body;
+// console.log(dadosBody)
+   let resultInsertDados = await controllerAluno.inserirAluno(dadosBody);
+ console.log(resultInsertDados)
+   response.status(resultInsertDados.status)// pegar o status que a controler e mandar no response
+   response.json(resultInsertDados)
 })
 
 //atualiza um aluno pelo is
@@ -85,6 +94,6 @@ app.delete('/v1/lion-school/aluno/:id', cors(), async function (request, respons
 
 })
 
-app.listen(8080, function() {
+app.listen(8080, function () {
    console.log('servidor aguardado requisições na porta 8080')
 })

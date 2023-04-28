@@ -5,8 +5,42 @@
  * Versão: 1.0
  **************************************************************/
 
+const { response } = require('express');
+
+
+    //import do arquivo de acesso ao banco de dados
+    var alunoDAO = require('../model/DAO/alunoDAO.js');
+
 //função para receber os dados do app e enviar para o model para inserir novo item
-const inserirAluno = function(dadosAluno){
+const inserirAluno = async function(dadosAluno){
+
+//-------------------------------------------------------------------------------
+// import do arquivo de global de configuração do projeto
+const message = require('./modulo/config.js')
+let erro = {}
+
+
+    if(dadosAluno.nome            == '' || dadosAluno.nome            == undefined || dadosAluno.nome.length            > 100 ||
+       dadosAluno.cpf             == '' || dadosAluno.cpf             == undefined || dadosAluno.cpf.length             > 18  ||
+       dadosAluno.rg              == '' || dadosAluno.rg              == undefined || dadosAluno.rg.length              > 15  ||
+       dadosAluno.data_nascimento == '' || dadosAluno.data_nascimento == undefined || dadosAluno.data_nascimento.length > 10  ||
+       dadosAluno.email           == '' || dadosAluno.email           == undefined || dadosAluno.email.length           > 250 
+    ){
+
+return message.ERROR_REQUIRED_DATA
+
+    }else {
+        //envia os dados para a model a ser inserdos no banco de dados
+        
+       let status = await alunoDAO.insertAluno(dadosAluno)
+    //    console.log(status);
+       if(status) {
+           return message.CREATED_ITEM
+       }else {
+           return message.ERROR_INTERNAL_SERVER
+       } 
+
+    }
 
 };
 
@@ -22,8 +56,7 @@ const deletarAluno = function(id){
 
 //função para retornar todos os itens da tabela recebidos do model
 const selecionarTodosAlunos =  async function(){
-    //import do arquivo de acesso ao banco de dados
-let alunoDAO = require('../model/DAO/alunoDAO.js');
+
 
 let dadosAlunos = await alunoDAO.selectAllAluno()
 //soliciat aao dao todos os alunos do bd
@@ -48,5 +81,6 @@ const buscarIdAluno = function(id){
 
 
 module.exports = {
-    selecionarTodosAlunos
+    selecionarTodosAlunos, 
+    inserirAluno
 }
