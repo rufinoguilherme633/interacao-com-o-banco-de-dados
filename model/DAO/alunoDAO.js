@@ -44,12 +44,43 @@ let sql = `insert into tbl_aluno(   nome,
 }
 
 // vai atualizar o registro existente n banco de dados
-const updateAluno = function (dadosAluno) {
+const updateAluno = async function (dadosAluno) {
 
+let sql = `update tbl_aluno set 
+            nome = '${dadosAluno.nome}',
+            rg   = '${dadosAluno.rg}',
+            cpf  = '${dadosAluno.cpf}',
+            data_nascimento   = '${dadosAluno.data_nascimento}',
+            email   = '${dadosAluno.email}'
+            where id = ${dadosAluno.id}`;
+//execulta o script no banco
+let result = await prisma.$executeRawUnsafe(sql);
+
+if(result) {
+    return true;
+}
+else{
+   return false;
+
+}
+    
 }
 
 //excluir um registro no banco dedados
-const deleteAluno = function (id) {
+const deleteAluno = async function (id) {
+    let sql = `delete from tbl_aluno where id = ${id}`;
+  
+    
+
+    let result = await prisma.$executeRawUnsafe(sql);
+
+if(result) {
+    return true;
+}
+else{
+   return false;
+
+}
 
 }
 
@@ -85,5 +116,7 @@ const selectByIdAluno = function (id) {
 
 module.exports = {
 selectAllAluno, 
-insertAluno
+insertAluno,
+updateAluno,
+deleteAluno
 }
