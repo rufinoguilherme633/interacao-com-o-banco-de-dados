@@ -49,7 +49,7 @@ const bodyJson = bodyParser.json();
 
 //import da controller do aluno
 var controllerAluno = require('./controller/controller_aluno.js')
-var message = require('./controller/module/config.js')
+var message = require('./controller/modulo/config.js')
 
 //endpoit retorna todos os dados de alunos
 app.get('/v1/lion-school/aluno', cors(), async function (request, response) {
@@ -76,14 +76,23 @@ app.get('/v1/lion-school/aluno/:id', cors(), async function (request, response) 
 //inserir um novo aluno
 app.post('/v1/lion-school/aluno', cors(), bodyJson, async function (request, response) {
 
-   
-   //recebe os dados encaminhados no body da requisição
-   let dadosBody = request.body;
-// console.log(dadosBody)
-   let resultInsertDados = await controllerAluno.inserirAluno(dadosBody);
- console.log(resultInsertDados)
-   response.status(resultInsertDados.status)// pegar o status que a controler e mandar no response
-   response.json(resultInsertDados)
+     //chega como array
+     let contentType = request.headers['content-type'];
+      // if(String(contentType).toLowerCase() == 'application/json'){
+  //recebe os dados encaminhados no body da requisição
+  let dadosBody = request.body;
+  // console.log(dadosBody)
+     let resultInsertDados = await controllerAluno.inserirAluno(dadosBody);
+   console.log(resultInsertDados)
+     response.status(resultInsertDados.status)// pegar o status que a controler e mandar no response
+     response.json(resultInsertDados)
+   //   }
+//    else {
+//       response.status (message.ERROR_INVALID_CONTENT_TYPE.status);
+//       response.json(message.ERROR_INVALID_CONTENT_TYPE)
+//   }
+
+ 
 })
 
 //atualiza um aluno pelo is
