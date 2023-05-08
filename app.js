@@ -78,7 +78,7 @@ app.post('/v1/lion-school/aluno', cors(), bodyJson, async function (request, res
 
      //chega como array
      let contentType = request.headers['content-type'];
-      // if(String(contentType).toLowerCase() == 'application/json'){
+       if(String(contentType).toLowerCase() == 'application/json'){
   //recebe os dados encaminhados no body da requisição
   let dadosBody = request.body;
   // console.log(dadosBody)
@@ -86,11 +86,11 @@ app.post('/v1/lion-school/aluno', cors(), bodyJson, async function (request, res
    console.log(resultInsertDados)
      response.status(resultInsertDados.status)// pegar o status que a controler e mandar no response
      response.json(resultInsertDados)
-   //   }
-//    else {
-//       response.status (message.ERROR_INVALID_CONTENT_TYPE.status);
-//       response.json(message.ERROR_INVALID_CONTENT_TYPE)
-//   }
+      }
+    else {
+      response.status (message.ERROR_INVALID_CONTENT_TYPE.status);
+       response.json(message.ERROR_INVALID_CONTENT_TYPE)
+   }
 
  
 })
