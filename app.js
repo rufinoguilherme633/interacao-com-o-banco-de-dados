@@ -57,19 +57,27 @@ app.get('/v1/lion-school/aluno', cors(), async function (request, response) {
    //solicita a controle que retorne todo os alunos do banco de dados
    let dados = await controllerAluno.selecionarTodosAlunos();
    //valida se existem registros para retorna uma rquisição
-   if (dados) {
-      response.json(dados)
-      response.status(200)
-   } else {
-      response.json();
-      response.status(404) // quando nãoo se encontra
-   }
-
+   // if (dados) {
+   //    response.json(dados)
+   //    response.status(200)
+   // } else {
+   //    response.json();
+   //    response.status(404) // quando nãoo se encontra
+   // }
+   response.status(dados.status)
+response.json(dados)
 })
 
 //retorna dados do aluno pelo id
 app.get('/v1/lion-school/aluno/:id', cors(), async function (request, response) {
+//receber o id enviado pela requisiçã 
+   let idAluno = request.params.id
+   // chama buscarIdAluno e encaminha o id
+let dados = await controllerAluno.buscarIdAluno(idAluno);
 
+//validar 
+response.status(dados.status)
+response.json(dados)
 
 })
 
@@ -104,7 +112,7 @@ let dadosBody = request.body;
  let idAluno = request.params.id;
 
  let resultUpdateDados  = await controllerAluno.atualizarAluno(dadosBody, idAluno)
-console.log(resultUpdateDados)
+// console.log(resultUpdateDados)
  response.status(resultUpdateDados.status)
  response.json(resultUpdateDados)
 

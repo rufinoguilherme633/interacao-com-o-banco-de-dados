@@ -22,14 +22,10 @@ var erro = {}
 //função para receber os dados do app e enviar para o model para inserir novo item
 const inserirAluno = async function (dadosAluno) {
 
-
     // import do arquivo de global de configuração do projeto
 
-
     //-------------------------------------------------------------------------------
-
     let erro = {}
-
 
     if (dadosAluno.nome == '' || dadosAluno.nome == undefined || dadosAluno.nome.length > 100 ||
         dadosAluno.cpf == '' || dadosAluno.cpf == undefined || dadosAluno.cpf.length > 18 ||
@@ -37,7 +33,6 @@ const inserirAluno = async function (dadosAluno) {
         dadosAluno.data_nascimento == '' || dadosAluno.data_nascimento == undefined || dadosAluno.data_nascimento.length > 10 ||
         dadosAluno.email == '' || dadosAluno.email == undefined || dadosAluno.email.length > 250
     ) {
-
         return message.ERROR_REQUIRED_DATA
 
     } else {
@@ -46,13 +41,18 @@ const inserirAluno = async function (dadosAluno) {
         let status = await alunoDAO.insertAluno(dadosAluno)
         //    console.log(status);
         if (status) {
-            return message.CREATED_ITEM
+            let dadosJson = {}
+            let alunoNovoId =await alunoDAO.selectLastId();
+            dadosAluno.id = alunoNovoId;
+            dadosJson.status = message.CREATED_ITEM.status
+            dadosJson.aluno = dadosAluno;
+            // return message.CREATED_ITEM
+            return dadosJson
+            
         } else {
             return message.ERROR_INTERNAL_SERVER
         }
-
     }
-
 };
 
 //função para receber os dados do app e enviar para o model para atualizar um item existente
@@ -73,15 +73,21 @@ const atualizarAluno = async function (dadosAluno, idAluno) { // recebe dois arg
         return message.ERROR_REQUIRED_ID
     } else {
         //adiciona o id no json com todos os dados, acresentando o id 
-        dadosAluno.id = idAluno
+        dadosAluno.id = idAluno}
         //encaminha para a Dao os dados para serem alterados
         let status = await alunoDAO.updateAluno(dadosAluno);
         if (status) {
-            return message.UPDATED_ITEM;
+            let dadosJson = {}
+            let alunoID = await alunoDAO.selectLastId();
+            dadosAluno.id = alunoID
+            dadosJson.status = message.UPDATED_ITEM.status
+            dadosJson.aluno = dadosAluno
+            return dadosJson
+            // return message.UPDATED_ITEM;
         } else {
             return message.ERROR_INTERNAL_SERVER;
         }
-    }
+    
 
 };
 
@@ -117,17 +123,49 @@ const selecionarTodosAlunos = async function () {
 
     //valida se tem
     if (dadosAlunos) {
+        //retorna dados da requisicao
+        dadosJson.status = 200
+        // retorna todos os registros
+        dadosJson.count = dadosAlunos.length
         //adiciona o array alunos e um jason para o app
         dadosJson.alunos = dadosAlunos
         return dadosJson
     } else {
-        return false
+        // dadosJson.status = 404
+      
+        return message.ERROR_NOT_FOUND
+
     }
 };
 
 //função para buscar um item filtrando pelo id, será enchaminhado para o model
-const buscarIdAluno = function (id) {
-
+const buscarIdAluno = async function (id) {
+//caso não tenha id, validaçã para o id
+    if (id == '' || id == undefined || isNaN(id)) {
+        return message.ERROR_REQUIRED_ID
+    }else {
+        let dadosAlunos = await alunoDAO.selectByIdAluno(id)
+        //soliciat aao dao todos os alunos do bd
+    
+        //cria um objeto tipo json
+        let dadosJson = {}
+    
+        //valida se tem
+        if (dadosAlunos) {
+            //retorna dados da requisicao
+            dadosJson.status = 200
+            // retorna todos os registros
+            // dadosJson.count = dadosAlunos.length
+            // apagamos o legth porque retorna um aluno só pelo id , sempre será 1
+            //adiciona o array alunos e um jason para o app
+            dadosJson.alunos = dadosAlunos
+            return dadosJson
+        } else {
+            // dadosJson.status = 404
+          
+            return message.ERROR_NOT_FOUND
+        }
+    }
 };
 
 
@@ -135,5 +173,6 @@ module.exports = {
     selecionarTodosAlunos,
     inserirAluno,
     atualizarAluno,
-    deletarAluno
+    deletarAluno,
+    buscarIdAluno
 }
